@@ -40,8 +40,6 @@ from jgtpy import jgtcommon as jgtcomm
 import common_samples
 """
 
-user_id='U10D2459770'
-password='Oz4pb'
 url='https://www.fxcorporate.com/Hosts.jsp'
 connection='Demo'
 quotes_count='800'
