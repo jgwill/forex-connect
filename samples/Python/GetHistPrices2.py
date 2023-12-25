@@ -19,28 +19,54 @@ import pandas as pd
 from forexconnect import ForexConnect, fxcorepy
 #from jgtpy import JGTConfig as conf
 
-import common_samples
+from dotenv import load_dotenv
+from dotenv import dotenv_values
+import os
+load_dotenv()  # take environment variables from .env.
+#env=load_dotenv(os.getenv(os.getcwd()))
+env = dotenv_values(".env")
 
+if os.getenv('user_id') == "":
+  load_dotenv(os.getenv('HOME'))
+if os.getenv('user_id') == "":
+  load_dotenv(os.getenv(os.getcwd()))
+user_id = os.getenv('user_id')
+password = os.getenv('password')
+url = os.getenv('url')
+connection = os.getenv('connection')
+quotes_count = os.getenv('quotes_count')
+
+from jgtpy import jgtcommon as jgtcomm
+import common_samples
+"""
+
+user_id='U10D2459770'
+password='Oz4pb'
+url='https://www.fxcorporate.com/Hosts.jsp'
+connection='Demo'
+quotes_count='800'
+"""
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Process command parameters.')
-    common_samples.add_main_arguments(parser)
-    common_samples.add_instrument_timeframe_arguments(parser)
-    common_samples.add_date_arguments(parser)
-    common_samples.add_max_bars_arguments(parser)
+    #jgtcomm.add_main_arguments(parser)
+    jgtcomm.add_instrument_timeframe_arguments(parser)
+    jgtcomm.add_date_arguments(parser)
+    jgtcomm.add_max_bars_arguments(parser)
     args = parser.parse_args()
     return args
 
 
 def main():
     args = parse_args()
-    str_user_id = #args.l
-    str_password = args.p
-    str_url = args.u
-    str_connection = args.c
-    str_session_id = args.session
-    str_pin = args.pin
-    str_instrument = args.i
+    str_user_id = user_id#args.l
+    str_password = password#args.p
+    str_url = url#args.u
+    str_connection = connection#args.c
+    #str_session_id = args.session
+    #str_pin = args.pin
+    
+    str_instrument = args.instrument
     str_timeframe = args.timeframe
     quotes_count = args.quotescount
     date_from = args.datefrom
@@ -49,7 +75,7 @@ def main():
     with ForexConnect() as fx:
         try:
             fx.login(str_user_id, str_password, str_url,
-                     str_connection, str_session_id, str_pin,
+                     str_connection,
                      common_samples.session_status_changed)
 
             print("")
@@ -71,14 +97,14 @@ def main():
                         pd.to_datetime(str(row['Date'])).strftime(date_format), row['BidOpen'], row['BidHigh'],
                         row['BidLow'], row['BidClose'], row['Volume']))
         except Exception as e:
-            common_samples.print_exception(e)
+            jgtcomm.print_exception(e)
         try:
             fx.logout()
         except Exception as e:
-            common_samples.print_exception(e)
+            jgtcomm.print_exception(e)
 
 
 if __name__ == "__main__":
     main()
     print("")
-    input("Done! Press enter key to exit\n")
+    #input("Done! Press enter key to exit\n")
