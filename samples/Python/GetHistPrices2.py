@@ -51,7 +51,8 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Process command parameters.')
     #jgtcomm.add_main_arguments(parser)
     jgtcomm.add_instrument_timeframe_arguments(parser)
-    jgtcomm.add_date_arguments(parser)
+    common_samples.add_date_arguments(parser)
+    #jgtcomm.add_date_arguments(parser)
     jgtcomm.add_max_bars_arguments(parser)
     args = parser.parse_args()
     return args
@@ -78,12 +79,13 @@ def main():
                      str_connection,
                      common_samples.session_status_changed)
 
-            print("")
-            print("Requesting a price history...")
+            #print("")
+            #print("Requesting a price history...")
             history = fx.get_history(str_instrument, str_timeframe, date_from, date_to, quotes_count)
             current_unit, _ = ForexConnect.parse_timeframe(str_timeframe)
            
             date_format = '%m.%d.%Y %H:%M:%S'
+            date_format = '%Y-%d-%m %H:%M:%S'
             if current_unit == fxcorepy.O2GTimeFrameUnit.TICK:
                 print("Date, Bid, Ask")
                 print(history.dtype.names)
@@ -91,11 +93,16 @@ def main():
                     print("{0:s}, {1:,.5f}, {2:,.5f}".format(
                         pd.to_datetime(str(row['Date'])).strftime(date_format), row['Bid'], row['Ask']))
             else:
-                print("Date, BidOpen, BidHigh, BidLow, BidClose, Volume")
+                print("Date, Open, High, Low, Close, Median, Volume")
                 for row in history:
-                    print("{0:s}, {1:,.5f}, {2:,.5f}, {3:,.5f}, {4:,.5f}, {5:d}".format(
-                        pd.to_datetime(str(row['Date'])).strftime(date_format), row['BidOpen'], row['BidHigh'],
-                        row['BidLow'], row['BidClose'], row['Volume']))
+                    open_price = (row['BidOpen'] + row['AskOpen']) / 2
+                    high_price = (row['BidHigh'] + row['AskHigh']) / 2
+                    low_price = (row['BidLow'] + row['AskLow']) / 2
+                    close_price = (row['BidClose'] + row['AskClose']) / 2
+                    median = (high_price + low_price) / 2
+                    print("{0:s},{1:.5f},{2:.5f},{3:.5f},{4:.5f},{5:.5f},{6:d}".format(
+                        pd.to_datetime(str(row['Date'])).strftime(date_format), open_price, high_price,
+                        low_price, close_price, median, row['Volume']))
         except Exception as e:
             jgtcomm.print_exception(e)
         try:
