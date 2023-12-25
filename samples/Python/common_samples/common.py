@@ -44,11 +44,12 @@ def add_main_arguments(parser: argparse.ArgumentParser):
                         metavar="URL",
                         required=True,
                         help='The server URL. For example,\
-                                 http://www.fxcorporate.com/Hosts.jsp.')
+                                 https://www.fxcorporate.com/Hosts.jsp.')
 
-    parser.add_argument('-c',
+    parser.add_argument('--connection',
                         metavar="CONNECTION",
-                        required=True,
+                        required=False,
+                        default="Demo",
                         help='The connection name. For example, \
                                  "Demo" or "Real".')
 
@@ -77,9 +78,9 @@ def add_instrument_timeframe_arguments(parser: argparse.ArgumentParser, timefram
                                   For example, "EUR/USD".')
 
     if timeframe:
-        parser.add_argument('-timeframe',
+        parser.add_argument('-t',
                             metavar="TIMEFRAME",
-                            default="m1",
+                            default="H1",
                             help='Time period which forms a single candle. \
                                       For example, m1 - for 1 minute, H1 - for 1 hour.')
 
